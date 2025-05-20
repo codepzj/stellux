@@ -133,6 +133,7 @@
   @import "highlight.js/styles/atom-one-dark.css";
 }
 
-.bytemd-editor .CodeMirror pre.CodeMirror-line, .bytemd-editor .CodeMirror pre.CodeMirror-line-like {
+.bytemd-editor .CodeMirror pre.CodeMirror-line,
+.bytemd-editor .CodeMirror pre.CodeMirror-line-like {
   @apply !px-8;
 }

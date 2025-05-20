@@ -115,29 +115,11 @@ export const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "/document",
-        name: "DocumentIndex",
+        path: "document",
+        name: "Document",
         meta: { title: "文档管理", icon: () => h(BookOutlined) },
-        component: () => import("@/views/document/index.vue"),
         redirect: { name: "DocumentOverview" },
-        children: [
-          {
-            path: "/document/overview",
-            name: "DocumentOverview",
-            meta: {
-              title: "文档概览",
-            },
-            component: () => import("@/views/document/overview.vue"),
-          },
-          {
-            path: "/document/content/:id",
-            name: "DocumentContent",
-            meta: { title: "文档内容", hideInSideBar: true },
-            component: () => import("@/views/document/content.vue"),
-          },
-        ],
       },
-
       {
         path: "label",
         name: "Label",
@@ -158,6 +140,40 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("@/views/test/index.vue"),
         name: "Test",
         meta: { title: "测试", icon: () => h(ExperimentOutlined) },
+      },
+    ],
+  },
+  {
+    path: "/document/overview",
+    name: "DocumentOverview",
+    meta: {
+      title: "文档概览",
+    },
+    component: () => import("@/views/document/overview.vue"),
+  },
+  {
+    path: "/document",
+    name: "Document",
+    component: () => import("@/views/document/index.vue"),
+    redirect: { name: "DocumentOverview" },
+    children: [
+      {
+        path: "overview",
+        name: "DocumentOverview",
+        meta: {
+          title: "文档概览",
+        },
+        component: () => import("@/views/document/overview.vue"),
+      },
+      {
+        path: "content/:id",
+        name: "DocumentContent",
+        meta: {
+          title: "文档内容",
+          hideInSideBar: true,
+          hideInBreadcrumb: true,
+        },
+        component: () => import("@/views/document/content.vue"),
       },
     ],
   },

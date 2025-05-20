@@ -10,7 +10,10 @@
         placeholder="请输入内容..."
       />
     </div>
-    <PhotoSelect v-model:open="photoSelectOpen" @selected-picture="selectedPicture" />
+    <PhotoSelect
+      v-model:open="photoSelectOpen"
+      @selected-picture="selectedPicture"
+    />
   </div>
 </template>
 
@@ -87,8 +90,6 @@ const mdPlugins = ref([
   }),
   photoSelect(photoSelectOpen),
 ]);
-
-
 </script>
 
 <style lang="scss" scoped></style>

@@ -5,7 +5,7 @@ import type { Ref } from "vue";
  * @param modalVisibleRef 外部定义的 ref，用于控制弹窗显示
  */
 export default function imageUploadPlugin(
-  modalVisibleRef: Ref<boolean>,
+  modalVisibleRef: Ref<boolean>
 ): BytemdPlugin {
   return {
     actions: [

@@ -4,7 +4,9 @@
       <div class="left-content">
         <slot name="left-content">左边内容区</slot>
       </div>
-      <div ref="separator" class="separator" @mousedown="startDrag"><i /><i /></div>
+      <div ref="separator" class="separator" @mousedown="startDrag">
+        <i /><i />
+      </div>
     </div>
     <div class="right-content">
       <slot name="right-content">右边内容区</slot>
@@ -13,39 +15,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { throttle } from 'lodash-es'
+import { ref } from "vue";
+import { throttle } from "lodash-es";
 
-const scalable = ref<HTMLDivElement>()
+const scalable = ref<HTMLDivElement>();
 
-let startX: number
-let startWidth: number
+let startX: number;
+let startWidth: number;
 
 // 拖拽中
 const onDrag = throttle(function (e: MouseEvent) {
   if (scalable.value) {
-    scalable.value.style.width = `${startWidth + e.clientX - startX}px`
+    scalable.value.style.width = `${startWidth + e.clientX - startX}px`;
   }
-}, 20)
+}, 20);
 
 // 拖拽结束
 const dragEnd = () => {
-  document.documentElement.style.userSelect = 'unset'
-  document.documentElement.removeEventListener('mousemove', onDrag)
-  document.documentElement.removeEventListener('mouseup', dragEnd)
-}
+  document.documentElement.style.userSelect = "unset";
+  document.documentElement.removeEventListener("mousemove", onDrag);
+  document.documentElement.removeEventListener("mouseup", dragEnd);
+};
 
 // 鼠标按下
 const startDrag = (e: MouseEvent) => {
-  startX = e.clientX
+  startX = e.clientX;
   if (scalable.value) {
-    startWidth = parseInt(window.getComputedStyle(scalable.value).width, 10)
+    startWidth = parseInt(window.getComputedStyle(scalable.value).width, 10);
   }
 
-  document.documentElement.style.userSelect = 'none'
-  document.documentElement.addEventListener('mousemove', onDrag)
-  document.documentElement.addEventListener('mouseup', dragEnd)
-}
+  document.documentElement.style.userSelect = "none";
+  document.documentElement.addEventListener("mousemove", onDrag);
+  document.documentElement.addEventListener("mouseup", dragEnd);
+};
 </script>
 
 <style lang="scss">

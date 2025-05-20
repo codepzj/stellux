@@ -13,9 +13,11 @@ type Document struct {
 	mongox.Model `bson:",inline"`
 	Title        string
 	Content      string
-	DocumentType string       `bson:"document_type"`
-	IsPublic     bool         `bson:"is_public"`
-	ParentID     bson.ObjectID `bson:"parent_id,omitempty"` // 根节点不需要parent_id
+	Description  string
+	Thumbnail    string
+	DocumentType string        `bson:"document_type"`
+	IsPublic     bool          `bson:"is_public"`
+	ParentID     bson.ObjectID `bson:"parent_id,omitempty"`   // 根节点不需要parent_id
 	DocumentID   bson.ObjectID `bson:"document_id,omitempty"` // 根节点不需要document_id
 }
 
@@ -40,6 +42,8 @@ func (d *DocumentDao) Create(ctx context.Context, doc *Document) error {
 		insertResult, err := d.coll.Creator().InsertOne(ctx, &Document{
 			Title:        doc.Title,
 			Content:      doc.Content,
+			Description:  doc.Description,
+			Thumbnail:    doc.Thumbnail,
 			DocumentType: doc.DocumentType,
 			IsPublic:     doc.IsPublic,
 		})
@@ -62,7 +66,7 @@ func (d *DocumentDao) Create(ctx context.Context, doc *Document) error {
 }
 
 func (d *DocumentDao) FindAllRoot(ctx context.Context) ([]*Document, error) {
-	documentList, err := d.coll.Finder().Filter(query.NewBuilder().Eq("document_type", "root").Build()).Find(ctx)
+	documentList, err := d.coll.Finder().Filter(query.NewBuilder().Eq("document_type", "root").Build()).Sort(bson.M{"updated_at": -1}).Find(ctx)
 	if err != nil {
 		return nil, err
 	}

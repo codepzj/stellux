@@ -10,9 +10,7 @@
           :maxlength="50"
         />
       </div>
-      <a-button type="primary" @click="open = true">
-        发布文章
-      </a-button>
+      <a-button type="primary" @click="open = true"> 发布文章 </a-button>
     </div>
 
     <MdWriter v-model:content="postForm.content" />

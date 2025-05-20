@@ -30,7 +30,10 @@ export function convertToTreeData(
 /**
  * 在 treeData 中递归查找指定 key 的节点
  */
-export function findNodeByKey(tree: TreeProps["treeData"], key: string): any | null {
+export function findNodeByKey(
+  tree: TreeProps["treeData"],
+  key: string
+): any | null {
   if (!tree) return null;
   for (const node of tree) {
     if (node.key === key) {
@@ -47,7 +50,10 @@ export function findNodeByKey(tree: TreeProps["treeData"], key: string): any | n
 /**
  * 获取指定 key 节点的 children 长度
  */
-export function getChildrenLengthByKey(tree: TreeProps["treeData"], key: string): number {
+export function getChildrenLengthByKey(
+  tree: TreeProps["treeData"],
+  key: string
+): number {
   const node = findNodeByKey(tree, key);
   return node?.children?.length || 0;
 }

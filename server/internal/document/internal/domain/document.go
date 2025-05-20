@@ -12,6 +12,8 @@ type Document struct {
 	UpdatedAt  time.Time
 	Title      string
 	Content    string
+	Description  string
+	Thumbnail    string
 	DocumentType string
 	IsPublic     bool
 	ParentID     bson.ObjectID

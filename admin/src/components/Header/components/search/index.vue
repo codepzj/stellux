@@ -1,7 +1,8 @@
 <template>
   <Tooltip title="搜索" placement="bottom" :mouse-enter-delay="0.5">
     <slot
-      ><SvgIcon name="search"
+      ><SvgIcon
+        name="search"
         class="cursor-pointer rounded-md p-1"
         :size="28"
         @click="visible = true"

@@ -11,7 +11,9 @@
         />
       </div>
     </div>
-    <MdWriter v-model:content="content" mode="auto" />
+    <div class="h-full overflow-scroll">
+      <MdWriter v-model:content="content" mode="auto" />
+    </div>
   </div>
 </template>
 

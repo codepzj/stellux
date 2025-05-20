@@ -49,6 +49,8 @@ func (r *DocumentRepository) DomainToDao(doc *domain.Document) *dao.Document {
 	return &dao.Document{
 		Title:      doc.Title,
 		Content:    doc.Content,
+		Description: doc.Description,
+		Thumbnail:   doc.Thumbnail,
 		DocumentType: doc.DocumentType,
 		IsPublic:     doc.IsPublic,
 		ParentID:   doc.ParentID,
@@ -63,6 +65,8 @@ func (r *DocumentRepository) DaoToDomain(doc *dao.Document) *domain.Document {
 		UpdatedAt:  doc.UpdatedAt,
 		Title:      doc.Title,
 		Content:    doc.Content,
+		Description: doc.Description,
+		Thumbnail:   doc.Thumbnail,
 		DocumentType: doc.DocumentType,
 		IsPublic:     doc.IsPublic,
 		ParentID:   doc.ParentID,

@@ -3,11 +3,7 @@
     <router-view v-slot="{ Component }">
       <template v-if="Component">
         <Suspense>
-          <Transition
-            name="fade-slide"
-            mode="out-in"
-            appear
-          >
+          <Transition name="fade-slide" mode="out-in" appear>
             <keep-alive :include="cacheNames">
               <component :is="Component" />
             </keep-alive>
@@ -23,7 +19,6 @@
 
 <script lang="ts" setup>
 import { cacheNames } from "@/router";
-
 </script>
 <style lang="scss" scoped>
 .fade-slide-leave-active,

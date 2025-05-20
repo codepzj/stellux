@@ -26,7 +26,7 @@ func (h *DocumentHandler) RegisterGinRoutes(engine *gin.Engine) {
 	}
 	adminGroup := engine.Group("/admin-api/document")
 	{
-		adminGroup.GET("/list",apiwrap.Wrap(h.GetAllRootDoc))
+		adminGroup.GET("/list", apiwrap.Wrap(h.GetAllRootDoc))
 		adminGroup.POST("/create", apiwrap.WrapWithBody(h.CreateDocument))
 	}
 }
@@ -48,33 +48,33 @@ func (h *DocumentHandler) GetDocumentTreeByID(c *gin.Context) *apiwrap.Response[
 	return apiwrap.SuccessWithDetail[any](h.DocumentDomainListToTreeVOList(documentList), "获取文档目录树成功")
 }
 
-func (h *DocumentHandler) GetAllRootDoc(c *gin.Context) *apiwrap.Response[any] {	
+func (h *DocumentHandler) GetAllRootDoc(c *gin.Context) *apiwrap.Response[any] {
 	documentList, err := h.serv.FindAllRoot(c.Request.Context())
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
-	return apiwrap.SuccessWithDetail[any](h.DocumentDomainListToTreeVOList(documentList), "获取文档列表成功")
+	return apiwrap.SuccessWithDetail[any](h.DocumentDomainListToRootVOList(documentList), "获取文档列表成功")
 }
 
 func (h *DocumentHandler) DocumentRequestToDomain(req DocumentRequest) *domain.Document {
+	var parentID, documentID bson.ObjectID
 	if req.DocumentType == "root" {
 		// 根节点不需要parent_id和document_id
-		return &domain.Document{
-			Title:        req.Title,
-			Content:      req.Content,
-			DocumentType: req.DocumentType,
-			IsPublic:     req.IsPublic,
-			ParentID:     bson.ObjectID{},
-			DocumentID:   bson.ObjectID{},
-		}
+		parentID = bson.ObjectID{}
+		documentID = bson.ObjectID{}
+	} else {
+		parentID = apiwrap.ConvertBsonID(req.ParentID)
+		documentID = apiwrap.ConvertBsonID(req.DocumentID)
 	}
 	return &domain.Document{
 		Title:        req.Title,
 		Content:      req.Content,
+		Description:  req.Description,
+		Thumbnail:    req.Thumbnail,
 		DocumentType: req.DocumentType,
 		IsPublic:     req.IsPublic,
-		ParentID:     apiwrap.ConvertBsonID(req.ParentID),
-		DocumentID:   apiwrap.ConvertBsonID(req.DocumentID),
+		ParentID:     parentID,
+		DocumentID:   documentID,
 	}
 }
 
@@ -94,5 +94,23 @@ func (h *DocumentHandler) DocumentDomainToTreeVO(doc *domain.Document) *Document
 func (h *DocumentHandler) DocumentDomainListToTreeVOList(docList []*domain.Document) []*DocumentTreeVO {
 	return lo.Map(docList, func(doc *domain.Document, _ int) *DocumentTreeVO {
 		return h.DocumentDomainToTreeVO(doc)
+	})
+}
+
+func (h *DocumentHandler) DocumentDomainToRootVO(doc *domain.Document) *DocumentRootVO {
+	return &DocumentRootVO{
+		ID:          doc.ID.Hex(),
+		CreatedAt:   doc.CreatedAt.String(),
+		UpdatedAt:   doc.UpdatedAt.String(),
+		Title:       doc.Title,
+		Description: doc.Description,
+		Thumbnail:   doc.Thumbnail,
+		IsPublic:    doc.IsPublic,
+	}
+}
+
+func (h *DocumentHandler) DocumentDomainListToRootVOList(docList []*domain.Document) []*DocumentRootVO {
+	return lo.Map(docList, func(doc *domain.Document, _ int) *DocumentRootVO {
+		return h.DocumentDomainToRootVO(doc)
 	})
 }

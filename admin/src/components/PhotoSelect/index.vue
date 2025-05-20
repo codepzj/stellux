@@ -105,7 +105,7 @@ const confirmSelectedPicture = () => {
  */
 const fetchThumbnails = async () => {
   const res = await queryFileList({
-    page_no: page.page_no,     // 当前页码
+    page_no: page.page_no, // 当前页码
     page_size: page.page_size, // 每页数量
   });
 
@@ -113,7 +113,7 @@ const fetchThumbnails = async () => {
   page.total_count = res.data.total_count;
 };
 
-watch(thumbnailModalOpen, (newVal) => {
+watch(thumbnailModalOpen, newVal => {
   // 如果打开，则拉取图片列表
   if (newVal) {
     fetchThumbnails();

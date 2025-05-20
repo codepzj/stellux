@@ -68,45 +68,41 @@
           </a-col>
         </a-row>
 
-        <a-row :gutter="16">
-          <a-col :span="12">
-            <a-form-item label="封面" name="thumbnail">
-              <div class="flex flex-row gap-2 items-end">
-                <div
-                  v-if="postForm.thumbnail"
-                  class="w-[200px] h-[112px] flex justify-center relative group"
+        <a-form-item label="封面" name="thumbnail">
+          <div class="flex flex-row gap-2 items-end">
+            <div
+              v-if="postForm.thumbnail"
+              class="w-[200px] h-[112px] flex justify-center relative group"
+            >
+              <a-image
+                :src="postForm.thumbnail"
+                class="rounded-md cursor-pointer object-cover"
+                :preview="false"
+                @click="thumbnailModalOpen = true"
+              />
+              <div
+                class="absolute top-1 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <a-button
+                  type="primary"
+                  shape="circle"
+                  danger
+                  size="small"
+                  @click.stop="postForm.thumbnail = ''"
                 >
-                  <a-image
-                    :src="postForm.thumbnail"
-                    class="rounded-md cursor-pointer object-cover"
-                    :preview="false"
-                    @click="thumbnailModalOpen = true"
-                  />
-                  <div
-                    class="absolute top-1 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <a-button
-                      type="primary"
-                      shape="circle"
-                      danger
-                      size="small"
-                      @click.stop="postForm.thumbnail = ''"
-                    >
-                      <CloseOutlined />
-                    </a-button>
-                  </div>
-                </div>
-                <div
-                  v-else
-                  class="w-[200px] h-[112px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-400"
-                  @click="thumbnailModalOpen = true"
-                >
-                  <span class="text-sm">选择图片</span>
-                </div>
+                  <CloseOutlined />
+                </a-button>
               </div>
-            </a-form-item>
-          </a-col>
-        </a-row>
+            </div>
+            <div
+              v-else
+              class="w-[200px] h-[112px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-400"
+              @click="thumbnailModalOpen = true"
+            >
+              <span class="text-sm">选择图片</span>
+            </div>
+          </div>
+        </a-form-item>
 
         <a-form-item label="描述" name="description">
           <a-textarea

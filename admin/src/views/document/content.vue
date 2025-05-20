@@ -1,6 +1,6 @@
 <template>
   <div class="h-full">
-    <a-card class="h-full overflow-scroll" :bordered="false">
+    <a-card class="h-full" :bordered="false">
       <div class="h-full flex">
         <SplitPanel>
           <template #left-content>
