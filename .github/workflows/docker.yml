@@ -22,6 +22,7 @@ jobs:
         run: |
           if [ "${{ matrix.service }}" = "web" ]; then
             echo "NEXT_PUBLIC_PROJECT_API=${{ secrets.NEXT_PUBLIC_PROJECT_API }}" > ./web/.env.production
+            echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}" >> ./web/.env.production
           elif [ "${{ matrix.service }}" = "admin" ]; then
             echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > ./admin/.env.production
           fi
