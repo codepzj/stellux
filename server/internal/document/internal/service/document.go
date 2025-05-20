@@ -10,6 +10,7 @@ import (
 
 type IDocumentService interface {
 	Create(ctx context.Context, doc *domain.Document) error
+	FindAllRoot(ctx context.Context) ([]*domain.Document, error)
 	FindAllByDocumentID(ctx context.Context, documentID bson.ObjectID) ([]*domain.Document, error)
 }
 
@@ -27,6 +28,10 @@ type DocumentService struct {
 
 func (s *DocumentService) Create(ctx context.Context, doc *domain.Document) error {
 	return s.repo.Create(ctx, doc)
+}
+
+func (s *DocumentService) FindAllRoot(ctx context.Context) ([]*domain.Document, error) {
+	return s.repo.FindAllRoot(ctx)
 }
 
 func (s *DocumentService) FindAllByDocumentID(ctx context.Context, documentID bson.ObjectID) ([]*domain.Document, error) {

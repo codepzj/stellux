@@ -130,22 +130,10 @@ export const routes: RouteRecordRaw[] = [
             component: () => import("@/views/document/overview.vue"),
           },
           {
-            path: "/document/content",
+            path: "/document/content/:id",
             name: "DocumentContent",
             meta: { title: "文档内容", hideInSideBar: true },
             component: () => import("@/views/document/content.vue"),
-            children: [
-              {
-                path: ":id",
-                component: () => import("@/views/document/pages/detail.vue"),
-                name: "DocumentContentIndex",
-                meta: {
-                  title: "文档详情",
-                  hideInSideBar: true,
-                  hideInBreadcrumb: true,
-                },
-              },
-            ],
           },
         ],
       },

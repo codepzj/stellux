@@ -49,6 +49,8 @@ const emit = defineEmits<{
 
 const content = useVModel(props, "content", emit);
 const selectedPicture = (picture: string) => {
+  // 如果图片为空，则不添加
+  if (!picture) return;
   content.value = content.value + `![图片](${picture})`;
 };
 

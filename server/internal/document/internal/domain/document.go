@@ -12,6 +12,8 @@ type Document struct {
 	UpdatedAt  time.Time
 	Title      string
 	Content    string
-	ParentID   bson.ObjectID
-	DocumentID bson.ObjectID
+	DocumentType string
+	IsPublic     bool
+	ParentID     bson.ObjectID
+	DocumentID   bson.ObjectID
 }

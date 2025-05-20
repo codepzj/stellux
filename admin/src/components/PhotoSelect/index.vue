@@ -94,6 +94,8 @@ const handleSelectPicture = (pictures: string[]) => {
 
 const confirmSelectedPicture = () => {
   emit("selected-picture", selectedPicture.value);
+  // 清空选中的图片
+  selectedPicture.value = "";
   thumbnailModalOpen.value = false;
 };
 

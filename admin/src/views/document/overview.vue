@@ -1,28 +1,28 @@
 <template>
-    <div>
-        <a-card>
-            <template #title>stellux文档</template>
-            <template #extra>
-                <a-button type="primary" @click="router.push({ path: '/document/content' })">
-                    前往stellux文档
-                </a-button>
-            </template>
-        </a-card>
+  <div class="p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a-card
+        v-for="doc in docList"
+        :key="doc.id"
+        class="cursor-pointer hover:translate-y-[-5px] transition-all duration-300"
+        @click="$router.push({ name: 'DocumentContent', params: { id: doc.id } })"
+      >
+        <h3>{{ doc.title }}</h3>
+      </a-card>
     </div>
+  </div>
 </template>
 
-<script setup lang='ts'>
-import { useRouter } from 'vue-router';
+<script setup lang="ts">
+import { getAllRootDocAPI } from '@/api/document';
+import type { DocumentTreeVO } from '@/types/document';
 
-defineOptions({
-    name: 'DocumentIndex'
-})
+const docList = ref<DocumentTreeVO[]>([]);
 
-const router = useRouter();
+const getAllDoc = async () => {
+  const res = await getAllRootDocAPI();
+  docList.value = res.data;
+};
 
-router.push({ name: 'DocumentOverview' });
+onMounted(getAllDoc);
 </script>
-
-<style lang='scss' scoped>
-
-</style>

@@ -1,12 +1,10 @@
 <template>
   <div>
-    <a-dropdown :overlay="Menu">
-
-    </a-dropdown>
+    <SvgIcon name="md" />
   </div>
 </template>
 
 <script setup>
-import Menu from './menu.vue'
-
+import SvgIcon from "@/components/SvgIcon/index.vue";
 </script>
+

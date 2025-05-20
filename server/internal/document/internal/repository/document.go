@@ -11,6 +11,7 @@ import (
 
 type IDocumentRepository interface {
 	Create(ctx context.Context, doc *domain.Document) error
+	FindAllRoot(ctx context.Context) ([]*domain.Document, error)
 	FindAllByDocumentID(ctx context.Context, documentID bson.ObjectID) ([]*domain.Document, error)
 }
 
@@ -28,6 +29,14 @@ func (r *DocumentRepository) Create(ctx context.Context, doc *domain.Document) e
 	return r.dao.Create(ctx, r.DomainToDao(doc))
 }
 
+func (r *DocumentRepository) FindAllRoot(ctx context.Context) ([]*domain.Document, error) {
+	documentList, err := r.dao.FindAllRoot(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return r.DaoToDomainList(documentList), nil
+}
+
 func (r *DocumentRepository) FindAllByDocumentID(ctx context.Context, documentID bson.ObjectID) ([]*domain.Document, error) {
 	documentList, err := r.dao.FindAllByDocumentID(ctx, documentID)
 	if err != nil {
@@ -40,6 +49,8 @@ func (r *DocumentRepository) DomainToDao(doc *domain.Document) *dao.Document {
 	return &dao.Document{
 		Title:      doc.Title,
 		Content:    doc.Content,
+		DocumentType: doc.DocumentType,
+		IsPublic:     doc.IsPublic,
 		ParentID:   doc.ParentID,
 		DocumentID: doc.DocumentID,
 	}
@@ -52,6 +63,8 @@ func (r *DocumentRepository) DaoToDomain(doc *dao.Document) *domain.Document {
 		UpdatedAt:  doc.UpdatedAt,
 		Title:      doc.Title,
 		Content:    doc.Content,
+		DocumentType: doc.DocumentType,
+		IsPublic:     doc.IsPublic,
 		ParentID:   doc.ParentID,
 		DocumentID: doc.DocumentID,
 	}

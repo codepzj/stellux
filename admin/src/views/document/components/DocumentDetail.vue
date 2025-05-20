@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import MdWriter from "@/components/MdWriter/index.vue";
 import { useVModel } from "@vueuse/core";
-import { useSidebarStore } from "@/store";
 
 const props = defineProps<{
   title: string;
@@ -30,8 +29,4 @@ const emit = defineEmits<{
 
 const title = useVModel(props, "title", emit);
 const content = ref("");
-
-onMounted(() => {
-  useSidebarStore().setCollapse(true);
-});
 </script>
