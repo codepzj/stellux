@@ -11,6 +11,7 @@ import (
 type Post struct {
 	ID          bson.ObjectID   // 文章ID
 	CreatedAt   time.Time       // 创建时间
+	UpdatedAt   time.Time       // 更新时间
 	Title       string          // 标题
 	Content     string          // 内容
 	Description string          // 描述

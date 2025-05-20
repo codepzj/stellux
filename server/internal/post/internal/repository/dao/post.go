@@ -83,6 +83,7 @@ type IPostDao interface {
 	GetByKeyWord(ctx context.Context, keyWord string) ([]*Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error)
 	GetDetailList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error)
+	GetAllPublishPost(ctx context.Context) ([]*Post, error)
 }
 
 var _ IPostDao = (*PostDao)(nil)
@@ -204,4 +205,9 @@ func (d *PostDao) SoftDeleteBatch(ctx context.Context, ids []bson.ObjectID) erro
 func (d *PostDao) RestoreBatch(ctx context.Context, ids []bson.ObjectID) error {
 	_, err := d.coll.Updater().Filter(query.In("_id", ids...)).Updates(update.NewBuilder().Set("deleted_at", nil).Build()).UpdateMany(ctx)
 	return err
+}
+
+// GetAllPublishPost 获取所有发布文章
+func (d *PostDao) GetAllPublishPost(ctx context.Context) ([]*Post, error) {
+	return d.coll.Finder().Filter(query.Eq("is_publish", true)).Find(ctx)
 }

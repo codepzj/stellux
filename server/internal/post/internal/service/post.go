@@ -24,6 +24,7 @@ type IPostService interface {
 	GetPostByKeyWord(ctx context.Context, keyWord string) ([]*domain.Post, error)
 	GetPostDetailById(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
 	GetPostDetailList(ctx context.Context, page *apiwrap.Page, postType string) ([]*domain.PostDetail, int64, error)
+	GetAllPublishPost(ctx context.Context) ([]*domain.Post, error)
 }
 
 var _ IPostService = (*PostService)(nil)
@@ -97,4 +98,9 @@ func (s *PostService) GetPostDetailList(ctx context.Context, page *apiwrap.Page,
 	default:
 		return nil, 0, errors.New("invalid post type")
 	}
+}
+
+// GetAllPublishPost 获取所有发布文章
+func (s *PostService) GetAllPublishPost(ctx context.Context) ([]*domain.Post, error) {
+	return s.repo.GetAllPublishPost(ctx)
 }

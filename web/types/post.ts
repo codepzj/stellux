@@ -44,3 +44,8 @@ export interface IPostCard {
 export interface PostPageReq extends Page {
   post_type: string;
 }
+
+export interface SiteMapVO {
+  id: string;
+  updated_at: string;
+}

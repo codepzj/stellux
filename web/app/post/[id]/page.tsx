@@ -4,7 +4,6 @@ import { Toc } from "@/components/Toc";
 import { getTableOfContents } from "@/lib/toc";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { Metadata } from "next";
-import { headers } from "next/headers";
 
 type Props = {
   params: Promise<{ id: string }>
@@ -45,10 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const image = data.thumbnail || "/default-thumbnail.jpg";
   const keywords = [data.category, ...(data.tags || [])].filter(Boolean);
 
-  const headerList = await headers();
-  const host = headerList.get("host") || "localhost:3000";
-  const protocol = host.startsWith("localhost") ? "http" : "https";
-  const url = `${protocol}://${host}/post/${id}`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/post/${id}`;
 
   return {
     title,
@@ -68,6 +64,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [image],
     },
     authors: [{ name: data.author }],
-    metadataBase: new URL(`${protocol}://${host}`),
+    metadataBase: new URL(url),
   };
 }

@@ -39,6 +39,11 @@ type PostDetailVO struct {
 	Thumbnail   string    `json:"thumbnail"`
 }
 
+type SiteMapVO struct {
+	ID          string    `json:"id"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 func GetCategoryNameFromLabel(label label.Domain) string {
 	return label.Name
 }
@@ -124,5 +129,14 @@ func (h *PostHandler) PostToVO(post *domain.Post) *PostVO {
 func (h *PostHandler) PostListToVOList(posts []*domain.Post) []*PostVO {
 	return lo.Map(posts, func(post *domain.Post, _ int) *PostVO {
 		return h.PostToVO(post)
+	})
+}
+
+func (h *PostHandler) PostListToSiteMapVOList(posts []*domain.Post) []*SiteMapVO {
+	return lo.Map(posts, func(post *domain.Post, _ int) *SiteMapVO {
+		return &SiteMapVO{
+			ID:          post.ID.Hex(),
+			UpdatedAt:   post.UpdatedAt,
+		}
 	})
 }

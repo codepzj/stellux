@@ -39,6 +39,7 @@ func (h *PostHandler) RegisterGinRoutes(engine *gin.Engine) {
 		postGroup.GET("/detail/:id", apiwrap.WrapWithUri(h.GetDetailPostById))
 		postGroup.GET("/:id", apiwrap.WrapWithUri(h.GetPostById))
 		postGroup.GET("/search", apiwrap.Wrap(h.GetPostByKeyWord))
+		postGroup.GET("/sitemap", apiwrap.Wrap(h.GetSiteMap))
 	}
 }
 
@@ -173,4 +174,13 @@ func (h *PostHandler) GetPostByKeyWord(c *gin.Context) *apiwrap.Response[any] {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
 	return apiwrap.SuccessWithDetail[any](h.PostListToVOList(postList), "获取文章成功")
+}
+
+func (h *PostHandler) GetSiteMap(c *gin.Context) *apiwrap.Response[any] {
+	postList, err := h.serv.GetAllPublishPost(c)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	siteMapVos := h.PostListToSiteMapVOList(postList)
+	return apiwrap.SuccessWithDetail[any](siteMapVos, "获取站点地图成功")
 }

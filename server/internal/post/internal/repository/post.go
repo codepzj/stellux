@@ -28,6 +28,7 @@ type IPostRepository interface {
 	GetByKeyWord(ctx context.Context, keyWord string) ([]*domain.Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
 	GetDetailList(ctx context.Context, page *apiwrap.Page, postType string) ([]*domain.PostDetail, int64, error)
+	GetAllPublishPost(ctx context.Context) ([]*domain.Post, error)
 }
 
 var _ IPostRepository = (*PostRepository)(nil)
@@ -143,6 +144,14 @@ func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page, 
 	return r.PostCategoryTagsDOToPostDetailList(posts), count, nil
 }
 
+func (r *PostRepository) GetAllPublishPost(ctx context.Context) ([]*domain.Post, error) {
+	posts, err := r.dao.GetAllPublishPost(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return r.PostDOToPostDomainList(posts), nil
+}
+
 // PostDomain2PostDO 将domain.Post转换为dao.Post
 func (r *PostRepository) PostDomainToPostDO(post *domain.Post) *dao.Post {
 	return &dao.Post{
@@ -174,11 +183,18 @@ func (r *PostRepository) PostDomainToUpdatePostDO(post *domain.Post) *dao.Update
 	}
 }
 
+func (r *PostRepository) PostDOToPostDomainList(posts []*dao.Post) []*domain.Post {
+	return lo.Map(posts, func(post *dao.Post, _ int) *domain.Post {
+		return r.PostDOToPostDomain(post)
+	})
+}
+
 // PostDOToPostDomain 将dao.Post转换为domain.Post
 func (r *PostRepository) PostDOToPostDomain(post *dao.Post) *domain.Post {
 	return &domain.Post{
 		ID:          post.ID,
 		CreatedAt:   post.CreatedAt,
+		UpdatedAt:   post.UpdatedAt,
 		Title:       post.Title,
 		Content:     post.Content,
 		Description: post.Description,
