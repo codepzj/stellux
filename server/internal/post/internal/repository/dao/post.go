@@ -209,5 +209,5 @@ func (d *PostDao) RestoreBatch(ctx context.Context, ids []bson.ObjectID) error {
 
 // GetAllPublishPost 获取所有发布文章
 func (d *PostDao) GetAllPublishPost(ctx context.Context) ([]*Post, error) {
-	return d.coll.Finder().Filter(query.Eq("is_publish", true)).Find(ctx)
+	return d.coll.Finder().Filter(query.Eq("is_publish", true)).Sort(bson.M{"updated_at": -1}).Find(ctx)
 }
