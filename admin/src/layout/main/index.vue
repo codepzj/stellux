@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-auto h-full">
+  <div class="h-full">
     <router-view v-slot="{ Component }">
       <template v-if="Component">
         <Suspense>

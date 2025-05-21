@@ -10,7 +10,6 @@ import PostCreate from "@/views/post/create.vue";
 import PostEdit from "@/views/post/edit.vue";
 import Login from "@/views/auth/login.vue";
 import {
-  TagOutlined,
   HomeOutlined,
   UserOutlined,
   AppstoreOutlined,
@@ -33,7 +32,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "/user",
         name: "UserManagement",
-        meta: { title: "用户管理", icon: () => h(UserOutlined) },
+        meta: { title: "用户", icon: () => h(UserOutlined) },
         children: [
           {
             path: "list",
@@ -68,7 +67,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "/post",
         name: "Post",
-        meta: { title: "文章管理", icon: () => h(AppstoreOutlined) },
+        meta: { title: "文章", icon: () => h(AppstoreOutlined) },
         children: [
           {
             path: "create",
@@ -112,25 +111,26 @@ export const routes: RouteRecordRaw[] = [
             name: "PostBin",
             meta: { title: "回收箱", hideInSideBar: true },
           },
+          {
+            path: "label",
+            name: "PostLabel",
+            meta: { title: "文章标签" },
+            component: () => import("@/views/label/index.vue"),
+          },
         ],
       },
       {
         path: "document",
         name: "Document",
-        meta: { title: "文档管理", icon: () => h(BookOutlined) },
+        meta: { title: "文档", icon: () => h(BookOutlined) },
         redirect: { name: "DocumentOverview" },
       },
-      {
-        path: "label",
-        name: "Label",
-        meta: { title: "标签管理", icon: () => h(TagOutlined) },
-        component: () => import("@/views/label/index.vue"),
-      },
+
       {
         path: "file",
         name: "File",
         meta: {
-          title: "附件管理",
+          title: "附件",
           icon: () => h(CloudUploadOutlined),
         },
         component: () => import("@/views/file/index.vue"),
@@ -144,14 +144,6 @@ export const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: "/document/overview",
-    name: "DocumentOverview",
-    meta: {
-      title: "文档概览",
-    },
-    component: () => import("@/views/document/overview.vue"),
-  },
-  {
     path: "/document",
     name: "Document",
     component: () => import("@/views/document/index.vue"),
@@ -160,19 +152,11 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "overview",
         name: "DocumentOverview",
-        meta: {
-          title: "文档概览",
-        },
         component: () => import("@/views/document/overview.vue"),
       },
       {
         path: "content/:id",
         name: "DocumentContent",
-        meta: {
-          title: "文档内容",
-          hideInSideBar: true,
-          hideInBreadcrumb: true,
-        },
         component: () => import("@/views/document/content.vue"),
       },
     ],

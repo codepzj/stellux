@@ -137,3 +137,7 @@
 .bytemd-editor .CodeMirror pre.CodeMirror-line-like {
   @apply !px-8;
 }
+
+.CodeMirror-vscrollbar {
+  @apply !overflow-hidden;
+}

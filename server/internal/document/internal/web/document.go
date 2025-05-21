@@ -26,13 +26,51 @@ func (h *DocumentHandler) RegisterGinRoutes(engine *gin.Engine) {
 	}
 	adminGroup := engine.Group("/admin-api/document")
 	{
+		adminGroup.GET("/:id", apiwrap.Wrap(h.GetDocumentByID))
 		adminGroup.GET("/list", apiwrap.Wrap(h.GetAllRootDoc))
+		adminGroup.GET("/parent-list", apiwrap.Wrap(h.GetAllParentDoc))
 		adminGroup.POST("/create", apiwrap.WrapWithBody(h.CreateDocument))
+		adminGroup.PUT("/save", apiwrap.WrapWithBody(h.SaveDocument))
+		adminGroup.PUT("/rename", apiwrap.WrapWithBody(h.RenameDocument))
+		adminGroup.DELETE("/delete", apiwrap.WrapWithBody(h.DeleteDocument))
+		adminGroup.DELETE("/delete-list", apiwrap.WrapWithBody(h.DeleteDocumentList))
 	}
 }
 
 func (h *DocumentHandler) CreateDocument(c *gin.Context, documentReq DocumentRequest) *apiwrap.Response[any] {
 	err := h.serv.Create(c.Request.Context(), h.DocumentRequestToDomain(documentReq))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.Success()
+}
+
+func (h *DocumentHandler) SaveDocument(c *gin.Context, req UpdateDocumentRequest) *apiwrap.Response[any] {
+	err := h.serv.UpdateDocumentByID(c.Request.Context(), apiwrap.ConvertBsonID(req.ID), req.Title, req.Content)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.Success()
+}
+
+func (h *DocumentHandler) RenameDocument(c *gin.Context, req RenameDocumentRequest) *apiwrap.Response[any] {
+	err := h.serv.RenameDocumentByID(c.Request.Context(), apiwrap.ConvertBsonID(req.ID), req.Title)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.Success()
+}
+
+func (h *DocumentHandler) DeleteDocument(c *gin.Context, req DeleteDocumentRequest) *apiwrap.Response[any] {
+	err := h.serv.DeleteByID(c.Request.Context(), apiwrap.ConvertBsonID(req.DocumentID))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.Success()
+}
+
+func (h *DocumentHandler) DeleteDocumentList(c *gin.Context, req DeleteDocumentListRequest) *apiwrap.Response[any] {
+	err := h.serv.DeleteByIDList(c.Request.Context(), apiwrap.ConvertBsonIDList(req.DocumentIDList))
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
@@ -48,8 +86,26 @@ func (h *DocumentHandler) GetDocumentTreeByID(c *gin.Context) *apiwrap.Response[
 	return apiwrap.SuccessWithDetail[any](h.DocumentDomainListToTreeVOList(documentList), "获取文档目录树成功")
 }
 
+func (h *DocumentHandler) GetDocumentByID(c *gin.Context) *apiwrap.Response[any] {
+	documentID := c.Param("id")
+	document, err := h.serv.GetDocumentByID(c.Request.Context(), apiwrap.ConvertBsonID(documentID))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithDetail[any](h.DocumentDomainToVO(document), "获取文档成功")
+}
+
 func (h *DocumentHandler) GetAllRootDoc(c *gin.Context) *apiwrap.Response[any] {
 	documentList, err := h.serv.FindAllRoot(c.Request.Context())
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithDetail[any](h.DocumentDomainListToRootVOList(documentList), "获取文档列表成功")
+}
+
+func (h *DocumentHandler) GetAllParentDoc(c *gin.Context) *apiwrap.Response[any] {
+	documentID := c.Query("document_id")
+	documentList, err := h.serv.FindAllParent(c.Request.Context(), apiwrap.ConvertBsonID(documentID))
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
@@ -112,5 +168,25 @@ func (h *DocumentHandler) DocumentDomainToRootVO(doc *domain.Document) *Document
 func (h *DocumentHandler) DocumentDomainListToRootVOList(docList []*domain.Document) []*DocumentRootVO {
 	return lo.Map(docList, func(doc *domain.Document, _ int) *DocumentRootVO {
 		return h.DocumentDomainToRootVO(doc)
+	})
+}
+
+func (h *DocumentHandler) DocumentDomainToVO(doc *domain.Document) *DocumentVO {
+	return &DocumentVO{
+		ID: doc.ID.Hex(),
+		CreatedAt: doc.CreatedAt.String(),
+		UpdatedAt: doc.UpdatedAt.String(),
+		Title: doc.Title,
+		Content: doc.Content,
+		DocumentType: doc.DocumentType,
+		IsPublic: doc.IsPublic,
+		ParentID: apiwrap.BsonID(doc.ParentID.Hex()),
+		DocumentID: apiwrap.BsonID(doc.DocumentID.Hex()),
+	}
+}
+
+func (h *DocumentHandler) DocumentDomainListToVOList(docList []*domain.Document) []*DocumentVO {
+	return lo.Map(docList, func(doc *domain.Document, _ int) *DocumentVO {
+		return h.DocumentDomainToVO(doc)
 	})
 }

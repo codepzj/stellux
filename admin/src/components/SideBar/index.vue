@@ -11,8 +11,9 @@
         :key="logoSrc"
         alt="logo"
         @load="onLoad"
+        @click="$router.push({ name: 'Dashboard' })"
         :class="[
-          'transition-opacity duration-700 ease-in-out my-[15px]',
+          'transition-opacity duration-700 ease-in-out my-2 cursor-pointer',
           sidebarStore.collapse ? 'mx-auto size-8' : 'ml-4 w-32',
           logoLoaded ? 'opacity-100' : 'opacity-0',
         ]"

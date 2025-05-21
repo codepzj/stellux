@@ -57,3 +57,26 @@ export function getChildrenLengthByKey(
   const node = findNodeByKey(tree, key);
   return node?.children?.length || 0;
 }
+
+/**
+ * 获取指定 key 节点及其所有子孙节点的 key 数组(删除子目录时使用)
+ */
+export function getAllChildIdByParentId(
+  tree: TreeProps["treeData"],
+  parentKey: string
+): string[] {
+  const result: string[] = [];
+
+  const node = findNodeByKey(tree, parentKey);
+  if (!node) return result;
+
+  function dfs(currentNode: any) {
+    result.push(currentNode.key);
+    if (currentNode.children?.length) {
+      currentNode.children.forEach((child: any) => dfs(child));
+    }
+  }
+
+  dfs(node);
+  return result;
+}

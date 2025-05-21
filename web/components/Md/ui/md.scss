@@ -1,10 +1,12 @@
-@import "github-markdown-css/github-markdown.css";
+@use "github-markdown-css/github-markdown.css";
 
 [id^="header-"] {
   scroll-margin-top: 80px;
 }
 
 .markdown-body {
+  width: 100%;
+  height: 100%;
   color-scheme: light;
   --focus-outlineColor: #0969da;
   --fgColor-default: #1f2328;

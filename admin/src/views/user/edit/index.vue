@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden my-8">
+  <div class="overflow-hidden py-8">
     <a-tabs
       v-model:activeKey="activeKey"
       tab-position="left"

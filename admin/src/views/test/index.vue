@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SvgIcon name="document" />
+    <SvgIcon name="folder-open" />
   </div>
 </template>
 

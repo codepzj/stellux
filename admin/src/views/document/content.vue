@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full overflow-x-hidden">
     <a-card class="h-full" :bordered="false">
       <div class="h-full flex">
         <SplitPanel>
@@ -7,19 +7,21 @@
             <a-spin class="w-full mx-auto" :spinning="loading">
               <a-tree
                 v-if="treeData?.length"
+                v-model:expandedKeys="expandedKeys"
                 v-model:selectedKeys="selectedKeys"
                 :tree-data="treeData"
                 @select="onHandleSelect"
                 block-node
                 show-icon
-                default-expand-all
               >
                 <template #title="{ title, key }">
                   <a-dropdown :trigger="['contextmenu']">
-                    <div class="cursor-pointer w-full p-1">{{ title }}</div>
+                    <div class="cursor-pointer w-full m-1">{{ title }}</div>
                     <template #overlay>
                       <a-menu v-if="isRoot(key)">
-                        <a-menu-item key="1">重命名</a-menu-item>
+                        <a-menu-item key="1" @click="handleRenameModalOpen(key)"
+                          >重命名</a-menu-item
+                        >
                         <a-menu-item
                           key="2"
                           @click="openCreateModal('parent', key, document_id)"
@@ -32,7 +34,9 @@
                         >
                       </a-menu>
                       <a-menu v-else-if="isParent(key)">
-                        <a-menu-item key="1">重命名</a-menu-item>
+                        <a-menu-item key="1" @click="handleRenameModalOpen(key)"
+                          >重命名</a-menu-item
+                        >
                         <a-menu-item
                           key="2"
                           @click="openCreateModal('parent', key, document_id)"
@@ -43,22 +47,31 @@
                           @click="openCreateModal('leaf', key, document_id)"
                           >新增文档</a-menu-item
                         >
-                        <a-menu-item key="4">删除目录</a-menu-item>
+                        <a-menu-item key="4" @click="deleteDocumentParent(key)"
+                          >删除目录</a-menu-item
+                        >
                       </a-menu>
                       <a-menu v-else>
-                        <a-menu-item key="1">重命名</a-menu-item>
-                        <a-menu-item key="2">删除文档</a-menu-item>
+                        <a-menu-item key="1" @click="handleRenameModalOpen(key)"
+                          >重命名</a-menu-item
+                        >
+                        <a-menu-item key="2" @click="deleteDocumentLeaf(key)"
+                          >删除文档</a-menu-item
+                        >
                       </a-menu>
                     </template>
                   </a-dropdown>
                 </template>
-                <template #switcherIcon="{ dataRef }">
+
+                <template #switcherIcon="{ dataRef, expanded }">
                   <SvgIcon
                     v-if="isRoot(dataRef.key) || isParent(dataRef.key)"
-                    :size="16"
-                    name="folder"
+                    :size="expanded ? 18 : 16"
+                    :name="expanded ? 'folder-open' : 'folder'"
+                    class="cursor-pointer"
                   />
                 </template>
+
                 <template #icon="{ key }">
                   <template v-if="isLeaf(key)">
                     <SvgIcon :size="16" name="md" />
@@ -77,13 +90,24 @@
           </template>
 
           <template #right-content>
-            <DocumentDetail v-model:title="title" />
+            <a-skeleton active v-if="loading" />
+            <div v-else>
+              <div class="py-3 pr-2.5">
+                <a-alert
+                  v-if="isRoot(selectedKeys[0])"
+                message="该页面用于展示文档首页"
+                type="info"
+                closable
+                show-icon
+              />
+              </div>
+              <DocumentDetail v-model:content="documentDetail.content" />
+            </div>
           </template>
         </SplitPanel>
       </div>
     </a-card>
 
-    <!-- 创建目录或文档的弹窗 -->
     <a-modal
       v-model:open="modal.visible"
       :title="modal.title"
@@ -91,35 +115,85 @@
       ok-text="创建"
       cancel-text="取消"
     >
-      <a-input
-        v-model:value="modal.input"
-        placeholder="请输入标题"
-        @keyup.enter="handleCreate"
-      />
+      <div class="flex flex-col gap-2 py-4">
+        <a-input
+          v-model:value="modal.input"
+          placeholder="请输入标题"
+          @keyup.enter="handleCreate"
+        />
+      </div>
+    </a-modal>
+
+    <a-modal
+      v-model:open="renameModal.visible"
+      title="重命名"
+      @ok="handleRename"
+      ok-text="确认"
+      cancel-text="取消"
+    >
+      <div class="flex flex-col gap-2 py-4">
+        <a-input
+          v-model:value="renameModal.title"
+          placeholder="请输入标题"
+          @keyup.enter="handleRename"
+        />
+      </div>
     </a-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref, reactive, onMounted, nextTick, computed, watchEffect } from "vue";
+import { useRoute } from "vue-router";
+import { message, type TreeProps } from "ant-design-vue";
+
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import SplitPanel from "@/components/SplitPanel/index.vue";
-import { message, type TreeProps } from "ant-design-vue";
-import { createDocumentAPI, getDocumentTreeByIDAPI } from "@/api/document";
-import { convertToTreeData, getChildrenLengthByKey } from "@/utils/convert";
-import type { DocumentRequest, DocumentTreeVO } from "@/types/document";
 import DocumentDetail from "./components/DocumentDetail.vue";
 
-const route = useRoute();
+import {
+  createDocumentAPI,
+  deleteDocumentByIDListAPI,
+  deleteDocumentLeafByIDAPI,
+  getAllParentDocAPI,
+  getDocumentByIDAPI,
+  getDocumentTreeByIDAPI,
+  renameDocumentAPI,
+  saveDocumentAPI,
+} from "@/api/document";
 
-const selectedKeys = ref<string[]>([]);
-const title = ref("");
+import { useDocumentStore } from "@/store/modules/document";
+import {
+  convertToTreeData,
+  getChildrenLengthByKey,
+  getAllChildIdByParentId,
+} from "@/utils/convert";
+
+import type { DocumentRequest, DocumentTreeVO } from "@/types/document";
+
+const route = useRoute();
 const document_id = ref(route.params.id as string);
 
+const expandedKeys = ref<string[]>([document_id.value]);
+const selectedKeys = ref<string[]>([]);
+const title = ref("");
 const loading = ref(true);
 const docTreeData = ref<DocumentTreeVO[]>([]);
 const treeData = ref<TreeProps["treeData"]>([]);
+const documentStore = useDocumentStore();
 
-// 弹窗状态管理
+const documentDetail = ref({
+  id: document_id.value,
+  title: "",
+  content: "",
+});
+
+const originDocument = ref({
+  id: document_id.value,
+  title: "",
+  content: "",
+});
+
 const modal = reactive({
   visible: false,
   title: "",
@@ -127,6 +201,13 @@ const modal = reactive({
   parent_id: "",
   document_id: "",
   input: "",
+  expandedKey: "",
+});
+
+const renameModal = reactive({
+  visible: false,
+  id: "",
+  title: "",
 });
 
 const openCreateModal = (
@@ -140,6 +221,7 @@ const openCreateModal = (
   modal.document_id = document_id;
   modal.input = "";
   modal.title = type === "parent" ? "新增目录" : "新增文档";
+  modal.expandedKey = parent_id;
 };
 
 const handleCreate = async () => {
@@ -156,7 +238,9 @@ const handleCreate = async () => {
     document_id: modal.document_id,
     document_type: modal.type,
   };
+
   await createDocumentAPI(newDocument);
+  expandedKeys.value = [...expandedKeys.value, modal.expandedKey];
   await getDocumentTree(route.params.id as string);
   modal.visible = false;
   message.success("创建成功");
@@ -167,54 +251,135 @@ const getDocumentTree = async (id: string) => {
   const res = await getDocumentTreeByIDAPI(id);
   docTreeData.value = res.data;
   treeData.value = convertToTreeData(docTreeData.value);
-  console.log("treeData", treeData.value);
   loading.value = false;
 };
 
-onMounted(async () => {
+const getParentDoc = async () => {
+  const res = await getAllParentDocAPI(document_id.value);
+  expandedKeys.value = [
+    ...expandedKeys.value,
+    ...res.data.map(item => item.id),
+  ];
+};
+
+const deleteDocumentLeaf = async (id: string) => {
+  await deleteDocumentLeafByIDAPI(id);
   await getDocumentTree(route.params.id as string);
+};
+
+const deleteDocumentParent = async (id: string) => {
+  const childIds = getAllChildIdByParentId(treeData.value, id);
+  await deleteDocumentByIDListAPI(childIds);
+  await getDocumentTree(route.params.id as string);
+};
+
+const handleRenameModalOpen = (id: string) => {
+  renameModal.visible = true;
+  renameModal.id = id;
+  renameModal.title = docTreeData.value.find(item => item.id === id)
+    ?.title as string;
+};
+
+const handleRename = async () => {
+  await renameDocumentAPI(renameModal.id, renameModal.title);
+  await getDocumentTree(route.params.id as string);
+  renameModal.visible = false;
+  message.success("重命名成功");
+};
+
+const saveDocument = async () => {
+  await saveDocumentAPI({
+    id: documentDetail.value.id,
+    title: documentDetail.value.title,
+    content: documentDetail.value.content,
+  });
+  originDocument.value.title = documentDetail.value.title;
+  originDocument.value.content = documentDetail.value.content;
+  message.success("保存成功");
+};
+
+const onHandleSelect = async (keys: string[]) => {
+  const key = keys[0];
+  if (isLeaf(key) || isRoot(key)) {
+    const res = await getDocumentByIDAPI(key);
+    documentDetail.value = {
+      id: res.data.id,
+      title: res.data.title,
+      content: res.data.content,
+    };
+    originDocument.value = {
+      id: res.data.id,
+      title: res.data.title,
+      content: res.data.content,
+    };
+  }
+};
+
+const isRoot = (id: string): boolean =>
+  docTreeData.value.find(item => item.id === id)?.document_type === "root";
+
+const isParent = (id: string): boolean =>
+  docTreeData.value.find(item => item.id === id)?.document_type === "parent";
+
+const isLeaf = (id: string): boolean =>
+  docTreeData.value.find(item => item.id === id)?.document_type === "leaf";
+
+const isDocumentAlreadyEdit = computed(() => {
+  return (
+    documentDetail.value.title !== originDocument.value.title ||
+    documentDetail.value.content !== originDocument.value.content
+  );
+});
+
+watchEffect(() => {
+  documentStore.setActionButtonList([
+    {
+      name: "保存",
+      disabled: !isDocumentAlreadyEdit.value,
+      action: saveDocument,
+    },
+  ]);
+  documentStore.setEditDocumentTitle(documentDetail.value.title);
+});
+
+// 页面加载逻辑（先加载文档树，然后加载首页）
+onMounted(async () => {
+  await getDocumentTree(document_id.value);
+  await nextTick();
+
   const rootNode = docTreeData.value.find(
     item => item.document_type === "root"
   );
   if (rootNode) {
     selectedKeys.value = [rootNode.id];
-    title.value = rootNode.title;
+    const res = await getDocumentByIDAPI(rootNode.id);
+    documentDetail.value = {
+      id: res.data.id,
+      title: res.data.title,
+      content: res.data.content,
+    };
+    originDocument.value = {
+      id: res.data.id,
+      title: res.data.title,
+      content: res.data.content,
+    };
+    title.value = res.data.title;
   }
+
+  await getParentDoc();
 });
-
-const isRoot = (id: string): boolean => {
-  return (
-    docTreeData.value.find(item => item.id === id)?.document_type === "root"
-  );
-};
-
-const isParent = (id: string): boolean => {
-  return (
-    docTreeData.value.find(item => item.id === id)?.document_type === "parent"
-  );
-};
-
-const isLeaf = (id: string): boolean => {
-  return (
-    docTreeData.value.find(item => item.id === id)?.document_type === "leaf"
-  );
-};
-
-const onHandleSelect = (keys: string[], event: any) => {
-  console.log("keys", keys);
-  if (isLeaf(keys[0]) || isRoot(keys[0])) {
-    title.value = event.node.title;
-  }
-};
 </script>
 
 <style lang="scss" scoped>
 :deep(.ant-card-body) {
   height: 100%;
-  padding: 10px;
+  padding: 10px 0 10px 10px;
 }
+
 :deep(.ant-tree .ant-tree-switcher) {
-  width: 16px;
+  width: 18px;
+  display: flex;
+  align-items: center;
 }
 :deep(.ant-tree .ant-tree-switcher-noop) {
   width: 0;
@@ -225,10 +390,6 @@ const onHandleSelect = (keys: string[], event: any) => {
   line-height: 22px;
   user-select: none;
   padding: 0;
-}
-:deep(.ant-tree .ant-tree-switcher) {
-  display: flex;
-  align-items: center;
 }
 :deep(.ant-tree .ant-tree-title) {
   width: 100%;

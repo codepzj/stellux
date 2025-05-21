@@ -96,7 +96,7 @@
             </div>
             <div
               v-else
-              class="w-[200px] h-[112px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-400"
+              class="w-[200px] h-[112px] flex items-center justify-center border-1 border-dashed border-gray-300 rounded-md cursor-pointer text-zinc-400 dark:text-zinc-600"
               @click="thumbnailModalOpen = true"
             >
               <span class="text-sm">选择图片</span>

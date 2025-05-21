@@ -8,6 +8,7 @@
         @change="content = $event"
         :mode="props.mode"
         placeholder="请输入内容..."
+        class="!overflow-hidden"
       />
     </div>
     <PhotoSelect

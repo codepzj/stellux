@@ -1,34 +1,26 @@
 <template>
   <div class="h-full">
-    <div class="flex justify-between items-center">
-      <div class="w-[300px] md:w-2/3 mb-4">
-        <a-input
-          v-model:value="title"
-          placeholder="请输入标题"
-          addon-before="标题"
-          show-count
-          :maxlength="50"
-        />
-      </div>
-    </div>
-    <div class="h-full overflow-scroll">
-      <MdWriter v-model:content="content" mode="auto" />
+    <div class="h-full">
+      <MdWriter v-if="documentStore.mode === 'edit'" v-model:content="content" mode="auto" />
+      <MdViewer v-else :content="content" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import MdWriter from "@/components/MdWriter/index.vue";
+import MdViewer from "@/components/MdViewer/index.vue";
+import { useDocumentStore } from "@/store/modules/document";
 import { useVModel } from "@vueuse/core";
 
+const documentStore = useDocumentStore();
 const props = defineProps<{
-  title: string;
+  content: string;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:title", value: string): void;
+  (e: "update:content", value: string): void;
 }>();
 
-const title = useVModel(props, "title", emit);
-const content = ref("");
+const content = useVModel(props, "content", emit);
 </script>

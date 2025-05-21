@@ -1,5 +1,6 @@
 <template>
   <div class="flex h-14 w-full items-center justify-between px-4 dark:bg-dark">
+    <!-- 左侧 Logo 区域 -->
     <div
       :class="[
         'flex items-center',
@@ -14,65 +15,78 @@
         @click="$router.push({ name: 'Dashboard' })"
         :class="[
           'transition-opacity cursor-pointer duration-700 ease-in-out my-[15px]',
-          sidebarStore.collapse ? 'mx-auto' : 'ml-4 w-8',
+          sidebarStore.collapse ? 'mx-auto' : 'w-8',
           logoLoaded ? 'opacity-100' : 'opacity-0',
         ]"
       />
-      <a-button
-        type="default"
-        class="text-sm font-bold"
+      <!-- 知识库按钮 -->
+      <div
+        class="text-sm font-bold cursor-pointer ml-2 transition-all duration-300 ease-in-out dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md px-2 py-1"
         @click="$router.push({ name: 'DocumentOverview' })"
       >
-        <span class="text-sm font-bold">知识库</span>
-      </a-button>
+        知识库
+      </div>
+      <!-- 编辑 / 预览切换 -->
+      <div
+        v-if="$route.name === 'DocumentContent'"
+        class="h-full flex items-center"
+      >
+        <a-select
+          v-model:value="documentStore.mode"
+          class="w-24 text-center"
+          :bordered="false"
+        >
+          <a-select-option value="preview" @click="setMode('preview')">
+            <span class="text-xs">预览模式</span>
+          </a-select-option>
+          <a-select-option value="edit" @click="setMode('edit')">
+            <span class="text-xs">编辑模式</span>
+          </a-select-option>
+        </a-select>
+      </div>
+      <div
+        v-if="$route.name === 'DocumentContent' && documentStore.editDocumentTitle"
+        class="ml-6 flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-300 px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300"
+        :title="documentStore.editDocumentTitle"
+      >
+        ✏️
+        <span class="font-medium text-zinc-700 dark:text-white">
+          {{ documentStore.editDocumentTitle }}
+        </span>
+      </div>
     </div>
+
+    <!-- 右侧操作区域 -->
     <div class="flex items-center gap-2">
+      <!-- 编辑操作按钮 -->
+      <div v-if="$route.name === 'DocumentContent'">
+        <a-button
+          v-for="button in documentStore.actionButtonList"
+          :disabled="button.disabled"
+          :key="button.name"
+          type="primary"
+          @click="button.action"
+        >
+          {{ button.name }}
+        </a-button>
+      </div>
+
+      <!-- 全屏/设置按钮 -->
       <FullScreen class="hidden md:block" />
       <Setting class="hidden md:block" />
-      <Dropdown placement="bottomRight">
-        <Avatar
-          class="cursor-pointer"
-          :src="userStore.userInfo?.avatar"
-          :alt="userStore.userInfo?.username"
-        >
-          {{ userStore.userInfo?.nickname }}
-        </Avatar>
-        <template #overlay>
-          <Menu>
-            <Menu.Item>
-              <div
-                @click.prevent="$router.push({ name: 'UserEdit' })"
-                class="flex items-center gap-2"
-              >
-                <EditOutlined />
-                编辑资料
-              </div>
-            </Menu.Item>
-            <Menu.Item>
-              <div @click.prevent="Logout" class="flex items-center gap-2">
-                <PoweroffOutlined />
-                退出登录
-              </div>
-            </Menu.Item>
-          </Menu>
-        </template>
-      </Dropdown>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { FullScreen, Setting } from "./components";
-import { useUserStore } from "@/store/modules/user";
-import { Menu, Dropdown, Avatar, message } from "ant-design-vue";
-import { PoweroffOutlined, EditOutlined } from "@ant-design/icons-vue";
-import { clearStore } from "@/utils/clear";
-import { useRouter } from "vue-router";
 import { useSidebarStore, useSystemStore } from "@/store";
-const userStore = useUserStore();
-const router = useRouter();
+import { useDocumentStore } from "@/store/modules/document";
+
+const documentStore = useDocumentStore();
 const sidebarStore = useSidebarStore();
 const systemStore = useSystemStore();
+
 const logoLoaded = ref(false);
 const logoSrc = computed(
   () => `/logo-sm-${systemStore.themeMode === "dark" ? "dark" : "light"}.png`
@@ -84,9 +98,7 @@ watch(logoSrc, () => {
   logoLoaded.value = false;
 });
 
-function Logout() {
-  clearStore();
-  message.info("退出成功,请重新登录");
-  router.push("/login");
-}
+const setMode = (newMode: "preview" | "edit") => {
+  documentStore.setMode(newMode);
+};
 </script>

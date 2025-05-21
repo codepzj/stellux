@@ -21,7 +21,9 @@
               <SvgIcon name="lock" :size="14" v-else />
             </div>
             <div class="flex justify-start gap-2 px-2 py-4">
-              <div class="text-sm text-gray-500 line-clamp-2">
+              <div
+                class="text-sm text-zinc-500 dark:text-zinc-200 line-clamp-2"
+              >
                 {{ doc.description }}
               </div>
             </div>
@@ -75,7 +77,7 @@
             </div>
             <div
               v-else
-              class="w-[200px] h-[112px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-400"
+              class="w-[200px] h-[112px] flex items-center justify-center border-1 border-dashed border-gray-300 rounded-md cursor-pointer text-zinc-400 dark:text-zinc-600"
               @click="thumbnailModalOpen = true"
             >
               <span class="text-sm">选择图片</span>

@@ -10,3 +10,22 @@ type DocumentRequest struct {
 	ParentID     string `json:"parent_id"`
 	DocumentID   string `json:"document_id"`
 }
+
+type DeleteDocumentRequest struct {
+	DocumentID string `json:"document_id" binding:"required"`
+}
+
+type DeleteDocumentListRequest struct {
+	DocumentIDList []string `json:"document_id_list" binding:"required"`
+}
+
+type UpdateDocumentRequest struct {
+	ID       string `json:"id" binding:"required"`
+	Title    string `json:"title" binding:"required"`
+	Content  string `json:"content" binding:"required"`
+}
+
+type RenameDocumentRequest struct {
+	ID    string `json:"id" binding:"required"`
+	Title string `json:"title" binding:"required"`
+}

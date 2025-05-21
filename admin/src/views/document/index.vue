@@ -3,7 +3,7 @@
     <div class="h-14">
       <DocumentHeader />
     </div>
-    <div class="overflow-auto">
+    <div class="overflow-hidden h-full">
       <router-view></router-view>
     </div>
   </div>

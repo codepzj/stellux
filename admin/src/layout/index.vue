@@ -1,7 +1,7 @@
 <template>
   <a-layout class="h-screen flex flex-col overflow-hidden">
     <a-layout-sider
-      width="216"
+      width="180"
       :trigger="null"
       collapsible
       v-model:collapsed="sidebarStore.collapse"
@@ -15,7 +15,7 @@
         <Header />
       </a-layout-header>
       <a-layout-content
-        class="h-[calc(100vh-64px)] p-4 overflow-y-auto overflow-x-hidden"
+        class="p-4 overflow-y-auto overflow-x-hidden"
       >
         <Main />
       </a-layout-content>
@@ -53,4 +53,22 @@ watch(width, newWidth => {
 });
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>
