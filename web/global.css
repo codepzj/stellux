@@ -2,3 +2,8 @@
 @plugin "./hero.ts";
 @source "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 @custom-variant dark (&:is(.dark *));
+@theme {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --transition: 0.3s ease-in-out;
+}

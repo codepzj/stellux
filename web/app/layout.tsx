@@ -1,14 +1,21 @@
+// app/layout.tsx 或 app/layout.jsx
+import { Fira_Code as FontMono, Inter as FontSans } from "next/font/google";
 import "@/global.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
-
-import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
 import Navbar from "@/components/Navbar";
+import { siteConfig } from "@/config/site";
 
+// 字体配置
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+// 页面元数据
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -20,6 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
+// 响应式视口主题色设置
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
@@ -27,20 +35,16 @@ export const viewport: Viewport = {
   ],
 };
 
+// 布局组件
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="en" className={`${fontSans.variable}`}>
       <head />
-      <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
+      <body className={clsx("min-h-screen bg-background font-sans antialiased")}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col min-h-screen">
             <Navbar />
