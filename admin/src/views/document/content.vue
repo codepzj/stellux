@@ -92,16 +92,17 @@
           <template #right-content>
             <a-skeleton active v-if="loading" />
             <div v-else>
-              <div class="py-3 pr-2.5">
+              <div class="pr-2.5">
                 <a-alert
                   v-if="isRoot(selectedKeys[0])"
-                message="该页面用于展示文档首页"
-                type="info"
-                closable
-                show-icon
-              />
+                  class="!py-3 !my-3"
+                  message="该页面用于展示文档首页"
+                  type="info"
+                  closable
+                  show-icon
+                />
+                <DocumentDetail class="mt-3" v-model:content="documentDetail.content" />
               </div>
-              <DocumentDetail v-model:content="documentDetail.content" />
             </div>
           </template>
         </SplitPanel>
