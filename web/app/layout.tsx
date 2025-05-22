@@ -1,5 +1,4 @@
-// app/layout.tsx 或 app/layout.jsx
-import { Fira_Code as FontMono, Inter as FontSans } from "next/font/google";
+import { Inter as FontSans } from "next/font/google";
 import "@/global.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
@@ -48,7 +47,7 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col min-h-screen">
             <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-1 mb-32">
+            <main className="container mx-auto max-w-6xl pt-16 px-6 flex-1 mb-32">
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-3">

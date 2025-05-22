@@ -77,7 +77,7 @@ export default () => {
   return (
     <>
       {/* 顶部导航栏 */}
-      <Navbar maxWidth="2xl" shouldHideOnScroll>
+      <Navbar maxWidth="lg">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink
@@ -87,6 +87,22 @@ export default () => {
               <Logo />
             </NextLink>
           </NavbarBrand>
+        </NavbarContent>
+
+        <NavbarContent
+          className="hidden h-11 rounded-full border-small border-default-200/20 bg-background/60 px-4 shadow-xs backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50 lg:flex"
+          justify="center"
+        >
+          <NavbarItem isActive>
+            <Link className="text-default-500" href="/" size="sm">
+              首页
+            </Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link className="text-default-500" href="/" size="sm">
+              文档
+            </Link>
+          </NavbarItem>
         </NavbarContent>
 
         <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
@@ -113,7 +129,7 @@ export default () => {
             {/* 小屏显示图标 */}
             <div
               onClick={() => setIsOpen(true)}
-              className="sm:hidden cursor-pointer p-2 rounded-md hover:bg-default-300 dark:hover:bg-default-500/30"
+              className="sm:hidden cursor-pointer"
             >
               <SearchLinearIcon size={20} className="text-default-500" />
             </div>
@@ -133,7 +149,7 @@ export default () => {
       {/* 搜索弹窗 */}
       <Modal isOpen={isOpen} onOpenChange={handleClose} placement="top" size="xl">
         <ModalContent>
-          <div className="px-4 pt-8 pb-4 space-y-6 bg-background rounded-xl shadow-xl">
+          <div className="px-4 pt-10 pb-4 space-y-6 bg-background rounded-xl shadow-sm">
             {/* 搜索框 */}
             <Input
               placeholder="输入关键词搜索..."
@@ -142,7 +158,7 @@ export default () => {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               classNames={{
-                base: "rounded-xl shadow-sm",
+                base: "rounded-md shadow-none",
                 inputWrapper: "bg-default-100 dark:bg-default-500/20",
                 input: "text-base",
               }}
@@ -163,7 +179,7 @@ export default () => {
                   >
                     <div
                       className="
-                        p-3 rounded-xl bg-default-100/70 dark:bg-default-500/10
+                        p-3 mb-2 rounded-xl bg-default-100/70 dark:bg-default-500/10
                         hover:bg-default-200 dark:hover:bg-white/10
                         transition-colors cursor-pointer shadow-sm
                         border border-transparent hover:border-default-300 dark:hover:border-zinc-800

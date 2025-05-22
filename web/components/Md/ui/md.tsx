@@ -38,10 +38,7 @@ export default function Md({ content, className }: { content: string, className?
           a: ({ children, href }) => (
             <Link
               href={href}
-              underline="hover"
               isExternal
-              isBlock
-              showAnchorIcon color="primary"
               className="text-primary"
             >
               {children}

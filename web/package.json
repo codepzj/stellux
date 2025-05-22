@@ -34,6 +34,7 @@
     "@react-aria/visually-hidden": "^3.8.23",
     "@react-types/shared": "^3.29.1",
     "@tailwindcss/postcss": "^4.1.7",
+    "class-variance-authority": "^0.7.1",
     "clsx": "2.1.1",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.12.1",
@@ -43,8 +44,8 @@
     "next": "15.3.2",
     "next-themes": "0.4.6",
     "qs": "^6.14.0",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
@@ -63,6 +64,7 @@
     "postcss": "^8.5.3",
     "prettier": "3.5.3",
     "tailwindcss": "^4.1.7",
+    "tw-animate-css": "^1.3.0",
     "typescript": "5.8.3"
   }
 }

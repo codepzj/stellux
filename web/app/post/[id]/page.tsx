@@ -14,15 +14,15 @@ export default async function PostPage({ params }: Props) {
   const post = await getPostDetailAPI(id);
   const toc = await getTableOfContents(post.data.content);
   return (
-    <div className="relative max-w-7xl mx-auto px-4">
-      <div className="flex flex-col justify-end lg:flex-row gap-12">
+    <div className="relative max-w-6xl mx-auto px-4">
+      <div className="w-full flex flex-col justify-end md:flex-row">
         {/* Markdown 内容 */}
-        <div className="w-full lg:w-2/3">
+        <div className="w-full md:w-3/4 md:pr-12">
           <h1 className="text-4xl font-bold mb-10">{post.data.title}</h1>
           <Md content={post.data.content} />
         </div>
         {/* 目录 */}
-        <div className="hidden lg:block lg:w-1/5">
+        <div className="hidden md:block md:w-1/5">
           <div className="sticky top-32">
             <ScrollShadow className="w-full max-h-[400px] overflow-y-auto" size={10} >
               <Toc toc={toc} />

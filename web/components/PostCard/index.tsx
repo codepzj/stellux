@@ -45,7 +45,7 @@ export function PostCard({
             )}
           </CardHeader>
 
-          <CardBody className="p-0 mb-4">
+          <CardBody className="p-0 mb-4 md:min-h-8">
             <p
               className="text-sm text-muted-foreground leading-relaxed px-2 max-w-full line-clamp-2 overflow-hidden text-ellipsis"
               title={post.description}
@@ -57,7 +57,7 @@ export function PostCard({
           <CardFooter className="hidden md:flex flex-wrap gap-2 p-0 text-sm text-muted-foreground">
             {post.category && (
               <span
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition truncate"
+                className="flex items-center gap-1.5 px-2 py-0.5 truncate"
                 title={`分类：${post.category}`}
               >
                 <Bookmark size={14} />
@@ -66,7 +66,7 @@ export function PostCard({
             )}
             {tags && (
               <span
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition truncate"
+                className="flex items-center gap-1.5 px-2 py-0.5 truncate"
                 title={`标签：${tags}`}
               >
                 <Tag size={14} />
@@ -74,7 +74,7 @@ export function PostCard({
               </span>
             )}
             <span
-              className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition"
+              className="flex items-center gap-1.5 px-2 py-0.5"
               title={post.created_at}
             >
               <Calendar size={14} />
